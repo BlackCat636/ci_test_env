@@ -6,7 +6,7 @@
  * Date: 10.11.2018
  * Time: 21:36
  */
-class Tests extends MY_Controller
+class News extends MY_Controller
 {
     protected $response_data;
 
@@ -30,11 +30,23 @@ class Tests extends MY_Controller
     // костыль
     public function index()
     {
-        $this->get_last_news();
+        $this->all();
     }
-    public function get_last_news()
+    public function all()
     {
         $this->response_data->data->news = News_model::get_all('short_info');
+        $this->response_data->data->patch_notes = '';
+        $this->response($this->response_data);
+    }
+    public function latest()
+    {
+        $this->response_data->data->news = News_model::get_last('short_info');
+        $this->response_data->data->patch_notes = '';
+        $this->response($this->response_data);
+    }
+    public function one($news_id)
+    {
+        $this->response_data->data->news = News_model::get_one($news_id,'one_info');
         $this->response_data->data->patch_notes = '';
         $this->response($this->response_data);
     }

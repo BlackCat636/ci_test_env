@@ -91,5 +91,6 @@ define('LANGUAGE_DEFAULT_COOKIE', 'base_url_lang');
 define('LOG_PATH', '/var/www/monster_slim/application/logs/log.txt');
 define('LOG_PATH_DIRECTORY', PACKAGE_PATH.'/logs/');
 define('APPLICATION_NEWS', 'news');
+define('TEST_USER', 1);
 define('SITE_NAME', 'base_url.com');
 define('HTTP_USERAGENT', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:55.0) Gecko/20100101 Firefox/55.0');

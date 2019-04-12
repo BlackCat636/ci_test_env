@@ -55,7 +55,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 // 	$route['404_override'] = 'main_page/closed';
 // }else{
 
-$route['default_controller'] = 'tests';
+$route['news/(:num)'] = 'news/one/$1';
+$route['like'] = 'likes/like';
+$route['unlike'] = 'likes/unlike';
+$route['comments/(:num)'] = 'comments/news/$1';
+
+
+$route['default_controller'] = 'news';
 $route['404_override'] = 'api/error_404';
 $route['404'] = 'api/error_404';
 $route['error'] = 'main_page/error';
@@ -64,6 +70,7 @@ $route['faq'] = 'main_page/faq';
 $route['top'] = 'main_page/top';
 
 $route['ref(:any)'] = 'partner/bestref/$1';
+
 
 $route['translate_uri_dashes'] = FALSE;
 

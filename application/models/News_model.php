@@ -8,8 +8,8 @@
  */
 class News_model extends MY_Model
 {
-    const NEWS_TABLE = APPLICATION_NEWS;
-    const PAGE_LIMIT = 5;
+    const NEWS_TABLE = 'news';
+    const PAGE_LIMIT = 3;
 
     protected $id;
     protected $header;
@@ -54,7 +54,10 @@ class News_model extends MY_Model
      */
     public function get_short_description()
     {
-        return $this->short_description;
+
+        $this->CI->load->helper('text');
+
+        return character_limiter($this->short_description,300);
     }
 
     /**
@@ -164,12 +167,12 @@ class News_model extends MY_Model
      * @param bool|string $preparation
      * @return array
      */
-    public static function get_all($preparation = FALSE)
+    public static function get_last($preparation = FALSE)
     {
 
         $CI =& get_instance();
 
-        $_data = $CI->s->from(self::NEWS_TABLE)->many();
+        $_data = $CI->s->from(self::NEWS_TABLE)->limit(self::PAGE_LIMIT)->sortDesc('time_created')->many();
 
         $news_list = [];
         foreach ($_data as $_item) {
@@ -182,6 +185,50 @@ class News_model extends MY_Model
 
         return self::preparation($news_list, $preparation);
     }
+    /**
+     * @param int $page
+     * @param bool|string $preparation
+     * @return array
+     */
+    public static function get_all($preparation = FALSE)
+    {
+
+        $CI =& get_instance();
+
+        $_data = $CI->s->from(self::NEWS_TABLE)->sortDesc('id')->many();
+
+        $news_list = [];
+        foreach ($_data as $_item) {
+            $news_list[] = (new self())->load_data($_item);
+        }
+
+        if ($preparation === FALSE) {
+            return $news_list;
+        }
+
+        return self::preparation($news_list, $preparation);
+    }
+    /**
+     * @param int $page
+     * @param bool|string $preparation
+     * @param int $news_id
+     * @return array
+     */
+    public static function get_one($news_id,$preparation = FALSE)
+    {
+
+        $CI =& get_instance();
+
+        $_data = $CI->s->from(self::NEWS_TABLE)->where('id',$news_id)->one();
+
+        $news = (new self())->load_data($_data);
+
+        if ($preparation === FALSE) {
+            return $news;
+        }
+
+        return self::preparation($news, $preparation);
+    }
 
     public static function preparation($data, $preparation)
     {
@@ -189,6 +236,8 @@ class News_model extends MY_Model
         switch ($preparation) {
             case 'short_info':
                 return self::_preparation_short_info($data);
+            case 'one_info':
+                return self::_preparation_one_info($data);
             default:
                 throw new Exception('undefined preparation type');
         }
@@ -212,9 +261,25 @@ class News_model extends MY_Model
         }
         return $res;
     }
-    
-    
-    public static function create($data){
+
+    /**
+     * @param News_model[] $data
+     * @return array
+     */
+    private static function _preparation_one_info($data)
+    {
+        $res = [];
+
+        $_info = new stdClass();
+        $_info->header = $data->get_header();
+        $_info->description = $data->get_full_text();
+        $_info->img = $data->get_image();
+        $_info->time = $data->get_time_updated();
+
+        return $_info;
+    }
+
+    public static function create($_insert_data){
 
         $CI =& get_instance();
 	    $res = $CI->s->from(self::NEWS_TABLE)->insert($_insert_data)->execute();
